@@ -15,10 +15,11 @@ import com.acs.oboeruapp.data.model.DeckBlock
 import com.acs.oboeruapp.data.model.DeckHeader
 import com.acs.oboeruapp.ui.components.AddBlockRow
 import com.acs.oboeruapp.ui.components.DeckCard
+import com.acs.oboeruapp.ui.components.LearningSpaceSelector
 import com.acs.oboeruapp.ui.components.UserHeader
+import com.acs.oboeruapp.utils.dummyLearningSpaces
 import oboeruapp.shared.generated.resources.Res
 import oboeruapp.shared.generated.resources.ic_grammar
-import oboeruapp.shared.generated.resources.ic_home
 import oboeruapp.shared.generated.resources.ic_kanji
 import oboeruapp.shared.generated.resources.ic_timer
 import oboeruapp.shared.generated.resources.ic_vocabulary
@@ -36,6 +37,14 @@ fun HomeScreen() {
             onProfileClick = {},
             onNotificationClick = {},
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+        )
+
+        LearningSpaceSelector(
+            spaces = dummyLearningSpaces,
+            selectedId = "ns_prep",
+            onSpaceClick = { space -> },
+            onAddClick = { /* TODO: navigate ke create learning space */ },
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
         )
 
         LazyColumn(

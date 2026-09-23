@@ -1,0 +1,9 @@
+package com.acs.oboeruapp.data.model
+
+import org.jetbrains.compose.resources.DrawableResource
+
+data class LearningSpace(
+    val id: String,
+    val title: String,
+    val icon: DrawableResource? = null
+)
