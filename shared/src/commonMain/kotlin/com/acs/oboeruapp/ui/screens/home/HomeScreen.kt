@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.acs.oboeruapp.data.model.DeckBlock
 import com.acs.oboeruapp.data.model.DeckHeader
 import com.acs.oboeruapp.ui.components.AddBlockRow
@@ -18,14 +20,20 @@ import com.acs.oboeruapp.ui.components.DeckCard
 import com.acs.oboeruapp.ui.components.LearningSpaceSelector
 import com.acs.oboeruapp.ui.components.UserHeader
 import com.acs.oboeruapp.utils.dummyLearningSpaces
+import com.acs.oboeruapp.viewmodel.HomeViewModel
 import oboeruapp.shared.generated.resources.Res
 import oboeruapp.shared.generated.resources.ic_grammar
 import oboeruapp.shared.generated.resources.ic_kanji
 import oboeruapp.shared.generated.resources.ic_timer
 import oboeruapp.shared.generated.resources.ic_vocabulary
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    viewModel: HomeViewModel = koinViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,9 +48,9 @@ fun HomeScreen() {
         )
 
         LearningSpaceSelector(
-            spaces = dummyLearningSpaces,
-            selectedId = "ns_prep",
-            onSpaceClick = { space -> },
+            spaces = uiState.learningSpaces,
+            selectedId = uiState.selectedSpaceId,
+            onSpaceClick = { space -> viewModel.onSpaceSelected(space.id) },
             onAddClick = { /* TODO: navigate ke create learning space */ },
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
         )
@@ -57,27 +65,21 @@ fun HomeScreen() {
                 bottom = 16.dp
             )
         ) {
-            item {
-                Column {
+            uiState.deckHeader?.let { header ->
+                item(key = uiState.selectedSpaceId) {
                     DeckCard(
-                        header = DeckHeader(
-                            title = "JLPT N5 Preparation",
-                            description = "My journey to pass JLPT N5!",
-                            backgroundImageUrl = "https://images.unsplash.com/photo-1573416033034-e42e14b545d2?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                        ),
-                        blocks = listOf(
-                            DeckBlock.ProgressBlock("vocab", Res.drawable.ic_vocabulary, "Vocabulary", "N5", 6, 20),
-                            DeckBlock.ProgressBlock("kanji", Res.drawable.ic_kanji, "Kanji", "N5", 3, 10),
-                            DeckBlock.ProgressBlock("grammar", Res.drawable.ic_grammar, "Grammar", "N5", 2, 10),
-                            DeckBlock.SimpleBlock("review", Res.drawable.ic_timer, "Today's Review", "18 items due")
-                        ),
+                        header = header,
+                        blocks = uiState.deckBlocks,
                         onMenuClick = { /* TODO */ },
                         onBlockClick = { block -> /* TODO: navigate sesuai block.id */ },
-                        onAddBlockClick = { /* TODO */ },
+                        onAddBlockClick = { /* TODO */ }
                     )
-                    Spacer(Modifier.height(12.dp))
-                    AddBlockRow(onClick = { /* TODO */ })
                 }
+            }
+
+            item {
+                Spacer(Modifier.height(12.dp))
+                AddBlockRow(onClick = { /* TODO */ })
             }
         }
     }
