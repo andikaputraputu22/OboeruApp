@@ -30,7 +30,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = koinViewModel()
+    viewModel: HomeViewModel = koinViewModel(),
+    onAddLearningSpaceClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -51,7 +52,7 @@ fun HomeScreen(
             spaces = uiState.learningSpaces,
             selectedId = uiState.selectedSpaceId,
             onSpaceClick = { space -> viewModel.onSpaceSelected(space.id) },
-            onAddClick = { /* TODO: navigate ke create learning space */ },
+            onAddClick = onAddLearningSpaceClick,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
         )
 
