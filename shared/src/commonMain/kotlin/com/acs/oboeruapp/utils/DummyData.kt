@@ -4,11 +4,16 @@ import com.acs.oboeruapp.data.model.Deck
 import com.acs.oboeruapp.data.model.DeckBlock
 import com.acs.oboeruapp.data.model.DeckHeader
 import com.acs.oboeruapp.data.model.LearningSpace
+import com.acs.oboeruapp.data.model.LearningSpaceTemplate
 import oboeruapp.shared.generated.resources.Res
+import oboeruapp.shared.generated.resources.fan
+import oboeruapp.shared.generated.resources.fuji_mountain
 import oboeruapp.shared.generated.resources.ic_grammar
 import oboeruapp.shared.generated.resources.ic_kanji
 import oboeruapp.shared.generated.resources.ic_timer
 import oboeruapp.shared.generated.resources.ic_vocabulary
+import oboeruapp.shared.generated.resources.ramen
+import oboeruapp.shared.generated.resources.torii_gate
 
 val dummyLearningSpaces = listOf(
     LearningSpace(
@@ -84,4 +89,31 @@ val dummyDecks = mapOf(
             ),
         ),
     )
+)
+
+val dummyLearningSpaceTemplate = listOf(
+    LearningSpaceTemplate(
+        id = "ns_prep",
+        title = "JLPT N5 Preparation",
+        description = "Essential vocabulary, kanji, and grammar for N5.",
+        icon = Res.drawable.fuji_mountain,
+    ),
+    LearningSpaceTemplate(
+        id = "daily",
+        title = "Daily Japanese",
+        description = "Useful phrases for everyday situations.",
+        icon = Res.drawable.ramen,
+    ),
+    LearningSpaceTemplate(
+        id = "travel",
+        title = "Travel in Japan",
+        description = "Essential phrases for your trip.",
+        icon = Res.drawable.torii_gate,
+    ),
+    LearningSpaceTemplate(
+        id = "anime",
+        title = "Anime & Manga",
+        description = "Learn the language you love from anime and manga.",
+        icon = Res.drawable.fan,
+    ),
 )

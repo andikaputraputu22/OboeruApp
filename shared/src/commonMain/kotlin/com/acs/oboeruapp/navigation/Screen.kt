@@ -15,4 +15,7 @@ sealed class Screen {
 
     @Serializable
     data object More: Screen()
+
+    @Serializable
+    data object ChooseLearningSpaceTemplate: Screen()
 }
