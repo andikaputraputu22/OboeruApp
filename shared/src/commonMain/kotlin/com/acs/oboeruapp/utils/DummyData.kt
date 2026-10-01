@@ -18,11 +18,13 @@ import oboeruapp.shared.generated.resources.torii_gate
 val dummyLearningSpaces = listOf(
     LearningSpace(
         id = "ns_prep",
-        title = "JLPT N5 Preparation"
+        title = "JLPT N5 Preparation",
+        icon = Res.drawable.fuji_mountain
     ),
     LearningSpace(
         id = "daily",
-        title = "Daily"
+        title = "Daily",
+        icon = Res.drawable.ramen
     )
 )
 
