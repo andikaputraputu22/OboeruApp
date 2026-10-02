@@ -18,6 +18,7 @@ import com.acs.oboeruapp.navigation.Screen
 import com.acs.oboeruapp.ui.components.AppBottomNavigationBar
 import com.acs.oboeruapp.ui.screens.home.HomeScreen
 import com.acs.oboeruapp.ui.screens.learningSpace.ChooseTemplateScreen
+import com.acs.oboeruapp.ui.screens.learningSpace.CustomizeLearningSpaceScreen
 import com.acs.oboeruapp.ui.theme.OboeruTheme
 
 @Composable
@@ -69,7 +70,17 @@ fun App() {
                         ChooseTemplateScreen(
                             onBackClick = { navController.popBackStack() },
                             onNextClick = { templateId -> },
-                            onCreateFromScratchClick = {}
+                            onCreateFromScratchClick = {
+                                navController.navigate(Screen.CustomizeLearningSpace)
+                            }
+                        )
+                    }
+                    composable<Screen.CustomizeLearningSpace> {
+                        CustomizeLearningSpaceScreen(
+                            onBackClick = { navController.popBackStack() },
+                            onNextClick = { name, iconId, colorId, description ->
+
+                            }
                         )
                     }
                 }
