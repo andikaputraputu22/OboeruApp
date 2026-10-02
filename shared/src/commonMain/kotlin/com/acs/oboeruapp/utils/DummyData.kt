@@ -1,8 +1,11 @@
 package com.acs.oboeruapp.utils
 
+import androidx.compose.ui.graphics.Color
+import com.acs.oboeruapp.data.model.ColorOption
 import com.acs.oboeruapp.data.model.Deck
 import com.acs.oboeruapp.data.model.DeckBlock
 import com.acs.oboeruapp.data.model.DeckHeader
+import com.acs.oboeruapp.data.model.IconOption
 import com.acs.oboeruapp.data.model.LearningSpace
 import com.acs.oboeruapp.data.model.LearningSpaceTemplate
 import oboeruapp.shared.generated.resources.Res
@@ -118,4 +121,19 @@ val dummyLearningSpaceTemplate = listOf(
         description = "Learn the language you love from anime and manga.",
         icon = Res.drawable.fan,
     ),
+)
+
+val dummyIconOptions = listOf(
+    IconOption("mountain", Res.drawable.fuji_mountain),
+    IconOption("torii", Res.drawable.torii_gate),
+    IconOption("ramen", Res.drawable.ramen),
+    IconOption("fan", Res.drawable.fan),
+)
+
+val dummyColorOptions = listOf(
+    ColorOption("blue", Color(0xFF6B8CDE)),
+    ColorOption("pink", Color(0xFFE8B4BC)),
+    ColorOption("mint", Color(0xFF8FD4BE)),
+    ColorOption("cream", Color(0xFFE8D4A8)),
+    ColorOption("gray", Color(0xFFB0B0B5)),
 )
