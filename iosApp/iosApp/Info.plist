@@ -7,5 +7,8 @@
 
     <key>UIUserInterfaceStyle</key>
     <string>Light</string>
+
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Oboeru needs access to your photo library so you can choose a cover photo for your Learning Space.</string>
 </dict>
 </plist>
