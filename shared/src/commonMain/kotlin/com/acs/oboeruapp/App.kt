@@ -19,6 +19,7 @@ import com.acs.oboeruapp.ui.components.AppBottomNavigationBar
 import com.acs.oboeruapp.ui.screens.home.HomeScreen
 import com.acs.oboeruapp.ui.screens.learningSpace.ChooseTemplateScreen
 import com.acs.oboeruapp.ui.screens.learningSpace.CustomizeLearningSpaceScreen
+import com.acs.oboeruapp.ui.screens.learningSpace.ReviewLearningSpaceScreen
 import com.acs.oboeruapp.ui.theme.OboeruTheme
 
 @Composable
@@ -79,8 +80,13 @@ fun App() {
                         CustomizeLearningSpaceScreen(
                             onBackClick = { navController.popBackStack() },
                             onNextClick = { name, iconId, colorId, description ->
-
+                                navController.navigate(Screen.ReviewLearningSpace)
                             }
+                        )
+                    }
+                    composable<Screen.ReviewLearningSpace> {
+                        ReviewLearningSpaceScreen(
+                            onBackClick = { navController.popBackStack() }
                         )
                     }
                 }
