@@ -21,4 +21,7 @@ sealed class Screen {
 
     @Serializable
     data object CustomizeLearningSpace: Screen()
+
+    @Serializable
+    data object ReviewLearningSpace: Screen()
 }

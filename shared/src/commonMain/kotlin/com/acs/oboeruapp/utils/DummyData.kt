@@ -123,6 +123,21 @@ val dummyLearningSpaceTemplate = listOf(
     ),
 )
 
+val dummyDeckBlock = listOf(
+    DeckBlock.SimpleBlock(
+        id = "vocab",
+        icon = Res.drawable.ic_vocabulary,
+        title = "Vocabulary",
+        subtitle = "JLPT N2",
+    ),
+    DeckBlock.SimpleBlock(
+        id = "grammar",
+        icon = Res.drawable.ic_grammar,
+        title = "Grammar",
+        subtitle = "JLPT N2",
+    ),
+)
+
 val dummyIconOptions = listOf(
     IconOption("mountain", Res.drawable.fuji_mountain),
     IconOption("torii", Res.drawable.torii_gate),
