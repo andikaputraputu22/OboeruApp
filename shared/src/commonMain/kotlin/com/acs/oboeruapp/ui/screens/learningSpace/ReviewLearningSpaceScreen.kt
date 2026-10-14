@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.acs.oboeruapp.ui.components.AddBlockRow
 import com.acs.oboeruapp.ui.components.ReviewBlockCard
 import com.acs.oboeruapp.ui.components.ReviewLearningSpaceCard
+import com.acs.oboeruapp.ui.components.ReviewLearningSpaceCoverImage
 import com.acs.oboeruapp.ui.components.RoundedButton
 import com.acs.oboeruapp.utils.dummyDeckBlock
 import oboeruapp.shared.generated.resources.Res
@@ -63,6 +64,13 @@ fun ReviewLearningSpaceScreen(
                     fontWeight = FontWeight.Bold,
                 )
                 Spacer(Modifier.height(24.dp))
+            }
+
+            item {
+                ReviewLearningSpaceCoverImage(
+                    backgroundImageUrl = "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=1470&auto=format&fit=crop"
+                )
+                Spacer(Modifier.height(8.dp))
             }
 
             item {
