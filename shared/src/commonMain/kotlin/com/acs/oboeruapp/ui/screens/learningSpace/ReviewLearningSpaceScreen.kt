@@ -34,6 +34,7 @@ import oboeruapp.shared.generated.resources.torii_gate
 
 @Composable
 fun ReviewLearningSpaceScreen(
+    onCreateClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
     Column(
@@ -119,7 +120,7 @@ fun ReviewLearningSpaceScreen(
         }
 
         Button(
-            onClick = {  },
+            onClick = onCreateClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 16.dp)
