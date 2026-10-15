@@ -19,6 +19,7 @@ import com.acs.oboeruapp.ui.components.AppBottomNavigationBar
 import com.acs.oboeruapp.ui.screens.home.HomeScreen
 import com.acs.oboeruapp.ui.screens.learningSpace.ChooseTemplateScreen
 import com.acs.oboeruapp.ui.screens.learningSpace.CustomizeLearningSpaceScreen
+import com.acs.oboeruapp.ui.screens.learningSpace.LearningSpaceCreatedScreen
 import com.acs.oboeruapp.ui.screens.learningSpace.ReviewLearningSpaceScreen
 import com.acs.oboeruapp.ui.theme.OboeruTheme
 
@@ -86,7 +87,26 @@ fun App() {
                     }
                     composable<Screen.ReviewLearningSpace> {
                         ReviewLearningSpaceScreen(
+                            onCreateClick = {
+                                navController.navigate(Screen.LearningSpaceCreated) {
+                                    popUpTo(Screen.ChooseLearningSpaceTemplate) { inclusive = true }
+                                }
+                            },
                             onBackClick = { navController.popBackStack() }
+                        )
+                    }
+                    composable<Screen.LearningSpaceCreated> {
+                        LearningSpaceCreatedScreen(
+                            onGoToHomeClick = {
+                                navController.navigate(Screen.Home) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            },
+                            onCreateAnotherClick = {
+                                navController.navigate(Screen.ChooseLearningSpaceTemplate) {
+                                    popUpTo(Screen.LearningSpaceCreated) { inclusive = true }
+                                }
+                            }
                         )
                     }
                 }
