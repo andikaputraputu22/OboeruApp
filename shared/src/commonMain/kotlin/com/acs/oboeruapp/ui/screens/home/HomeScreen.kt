@@ -10,11 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.acs.oboeruapp.data.model.DeckBlock
 import com.acs.oboeruapp.data.model.DeckHeader
+import com.acs.oboeruapp.ui.components.AddBlockBottomSheet
 import com.acs.oboeruapp.ui.components.AddBlockRow
 import com.acs.oboeruapp.ui.components.DeckCard
 import com.acs.oboeruapp.ui.components.LearningSpaceSelector
@@ -34,6 +38,7 @@ fun HomeScreen(
     onAddLearningSpaceClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showAddBlockSheet by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -80,8 +85,18 @@ fun HomeScreen(
 
             item {
                 Spacer(Modifier.height(12.dp))
-                AddBlockRow(onClick = { /* TODO */ })
+                AddBlockRow(onClick = { showAddBlockSheet = true })
             }
         }
+    }
+
+    if (showAddBlockSheet) {
+        AddBlockBottomSheet(
+            spaceName = "JLPT N2 Preparation",
+            onDismiss = { showAddBlockSheet = false },
+            onBlockClick = { block ->
+                showAddBlockSheet = false
+            }
+        )
     }
 }

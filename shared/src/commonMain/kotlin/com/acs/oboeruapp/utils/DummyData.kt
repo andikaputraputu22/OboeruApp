@@ -138,6 +138,27 @@ val dummyDeckBlock = listOf(
     ),
 )
 
+val dummyDeckBlockOptions = listOf(
+    DeckBlock.SimpleBlock(
+        id = "vocab",
+        icon = Res.drawable.ic_vocabulary,
+        title = "Vocabulary",
+        subtitle = "Words & phrases",
+    ),
+    DeckBlock.SimpleBlock(
+        id = "kanji",
+        icon = Res.drawable.ic_kanji,
+        title = "Kanji",
+        subtitle = "Characters",
+    ),
+    DeckBlock.SimpleBlock(
+        id = "grammar",
+        icon = Res.drawable.ic_grammar,
+        title = "Grammar",
+        subtitle = "Patterns & usage",
+    ),
+)
+
 val dummyIconOptions = listOf(
     IconOption("mountain", Res.drawable.fuji_mountain),
     IconOption("torii", Res.drawable.torii_gate),
