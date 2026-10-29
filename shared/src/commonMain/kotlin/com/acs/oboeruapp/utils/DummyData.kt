@@ -1,13 +1,13 @@
 package com.acs.oboeruapp.utils
 
 import androidx.compose.ui.graphics.Color
-import com.acs.oboeruapp.data.model.ColorOption
-import com.acs.oboeruapp.data.model.Deck
-import com.acs.oboeruapp.data.model.DeckBlock
-import com.acs.oboeruapp.data.model.DeckHeader
-import com.acs.oboeruapp.data.model.IconOption
-import com.acs.oboeruapp.data.model.LearningSpace
-import com.acs.oboeruapp.data.model.LearningSpaceTemplate
+import com.acs.oboeruapp.features.deck.domain.model.Deck
+import com.acs.oboeruapp.features.deck.domain.model.DeckBlock
+import com.acs.oboeruapp.features.deck.domain.model.DeckHeader
+import com.acs.oboeruapp.features.learningspace.domain.model.LearningSpace
+import com.acs.oboeruapp.features.learningspace.domain.model.LearningSpaceTemplate
+import com.acs.oboeruapp.features.learningspace.ui.model.ColorOption
+import com.acs.oboeruapp.features.learningspace.ui.model.IconOption
 import oboeruapp.shared.generated.resources.Res
 import oboeruapp.shared.generated.resources.fan
 import oboeruapp.shared.generated.resources.fuji_mountain
