@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.acs.oboeruapp.features.deck.ui.components.AddBlockBottomSheet
@@ -27,6 +28,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
+    bottomBarPadding: Dp = 0.dp,
     onAddLearningSpaceClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -59,7 +61,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(
                 start = 16.dp,
                 end = 16.dp,
-                bottom = 16.dp
+                bottom = bottomBarPadding + 16.dp
             )
         ) {
             uiState.deckHeader?.let { header ->
