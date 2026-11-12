@@ -1,5 +1,7 @@
 package com.acs.oboeruapp
 
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -9,7 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
@@ -57,13 +61,20 @@ fun App() {
                     }
                 }
             ) { innerPadding ->
+                val layoutDirection = LocalLayoutDirection.current
                 NavHost(
                     navController = navController,
                     startDestination = Screen.Home,
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(
+                        start = innerPadding.calculateStartPadding(layoutDirection),
+                        top = innerPadding.calculateTopPadding(),
+                        end = innerPadding.calculateEndPadding(layoutDirection),
+                        bottom = if (showBottomNav) 0.dp else innerPadding.calculateBottomPadding(),
+                    )
                 ) {
                     composable<Screen.Home> {
                         HomeScreen(
+                            bottomBarPadding = innerPadding.calculateBottomPadding(),
                             onAddLearningSpaceClick = {
                                 navController.navigate(Screen.ChooseLearningSpaceTemplate)
                             }
