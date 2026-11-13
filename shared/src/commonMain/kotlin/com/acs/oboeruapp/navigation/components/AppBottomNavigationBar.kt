@@ -71,15 +71,15 @@ fun AppBottomNavigationBar(
 
     val glassSurfaceBrush = Brush.verticalGradient(
         colors = listOf(
-            Color.White.copy(alpha = 0.92f),
-            Color(0xFFF6F6F8).copy(alpha = 0.86f),
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.90f),
         )
     )
     val glassBorderBrush = Brush.verticalGradient(
         colors = listOf(
-            Color.White.copy(alpha = 0.95f),
-            Color.Black.copy(alpha = 0.06f),
-            Color.White.copy(alpha = 0.80f),
+            Color.White.copy(alpha = 0.16f),
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
+            Color.White.copy(alpha = 0.08f),
         )
     )
 
@@ -95,10 +95,10 @@ fun AppBottomNavigationBar(
                 .fillMaxWidth()
                 .height(62.dp)
                 .shadow(
-                    elevation = 14.dp,
+                    elevation = 16.dp,
                     shape = CircleShape,
-                    ambientColor = Color.Black.copy(alpha = 0.14f),
-                    spotColor = Color.Black.copy(alpha = 0.16f),
+                    ambientColor = Color.Black.copy(alpha = 0.40f),
+                    spotColor = Color.Black.copy(alpha = 0.50f),
                 )
                 .clip(CircleShape)
                 .background(brush = glassSurfaceBrush)
@@ -119,14 +119,14 @@ fun AppBottomNavigationBar(
                 ),
             )
 
-            // Sliding active pill indicator
+            // Sliding active pill indicator (matching sample-app.jpeg active pill)
             Box(
                 modifier = Modifier
                     .offset(x = indicatorOffset)
                     .width(tabWidth)
                     .fillMaxHeight()
                     .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.065f))
+                    .background(Color.White.copy(alpha = 0.10f))
             )
 
             Row(

@@ -1,48 +1,85 @@
 package com.acs.oboeruapp.core.designsystem.theme
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val OboeruColorScheme = lightColorScheme(
-    primary = OboeruPrimary,
+val OboeruDarkColorScheme = darkColorScheme(
+    primary = OboeruDarkPrimary,
+    onPrimary = OboeruDarkOnPrimary,
+    primaryContainer = OboeruDarkPrimaryContainer,
+    onPrimaryContainer = OboeruDarkOnPrimaryContainer,
+
+    secondary = OboeruDarkSecondary,
+    onSecondary = OboeruDarkOnSecondary,
+    secondaryContainer = OboeruDarkSecondaryContainer,
+    onSecondaryContainer = OboeruDarkOnSecondaryContainer,
+
+    tertiary = OboeruDarkTertiary,
+    onTertiary = OboeruDarkOnTertiary,
+    tertiaryContainer = OboeruDarkTertiaryContainer,
+    onTertiaryContainer = OboeruDarkOnTertiaryContainer,
+
+    background = OboeruDarkBackground,
+    onBackground = OboeruDarkNeutral,
+    surface = OboeruDarkSurface,
+    onSurface = OboeruDarkNeutral,
+    surfaceVariant = OboeruDarkSurfaceVariant,
+    onSurfaceVariant = OboeruDarkOnSurfaceVariant,
+
+    inverseSurface = OboeruDarkInverseSurface,
+    inverseOnSurface = OboeruDarkInverseOnSurface,
+
+    outline = OboeruDarkOutline,
+    outlineVariant = OboeruDarkOutlineVariant,
+    error = OboeruDarkError,
+    onError = OboeruDarkOnError,
+)
+
+val OboeruLightColorScheme = lightColorScheme(
+    primary = OboeruLightPrimary,
     onPrimary = Color.White,
-    primaryContainer = OboeruPrimaryContainer,
-    onPrimaryContainer = OboeruOnPrimaryContainer,
+    primaryContainer = OboeruLightPrimaryContainer,
+    onPrimaryContainer = OboeruLightOnPrimaryContainer,
 
-    secondary = OboeruSecondary,
+    secondary = OboeruLightSecondary,
     onSecondary = Color.White,
-    secondaryContainer = OboeruSecondaryContainer,
-    onSecondaryContainer = OboeruNeutral,
+    secondaryContainer = OboeruLightSecondaryContainer,
+    onSecondaryContainer = OboeruLightNeutral,
 
-    tertiary = OboeruTertiary,
+    tertiary = OboeruLightTertiary,
     onTertiary = Color.White,
-    tertiaryContainer = OboeruTertiaryContainer,
-    onTertiaryContainer = OboeruTertiary,
+    tertiaryContainer = OboeruLightTertiaryContainer,
+    onTertiaryContainer = OboeruLightTertiary,
 
-    background = OboeruBackground,
-    onBackground = OboeruNeutral,
-    surface = OboeruSurface,
-    onSurface = OboeruNeutral,
-    surfaceVariant = OboeruSecondaryContainer,
-    onSurfaceVariant = OboeruSecondary,
+    background = OboeruLightBackground,
+    onBackground = OboeruLightNeutral,
+    surface = OboeruLightSurface,
+    onSurface = OboeruLightNeutral,
+    surfaceVariant = OboeruLightSecondaryContainer,
+    onSurfaceVariant = OboeruLightSecondary,
 
-    inverseSurface = OboeruNeutral,
+    inverseSurface = OboeruLightNeutral,
     inverseOnSurface = Color.White,
 
-    outline = OboeruOutline,
-    outlineVariant = OboeruOutlineVariant,
-    error = OboeruError,
+    outline = OboeruLightOutline,
+    outlineVariant = OboeruLightOutlineVariant,
+    error = OboeruLightError,
     onError = Color.White,
 )
 
 @Composable
-fun OboeruTheme(content: @Composable () -> Unit) {
+fun OboeruTheme(
+    darkTheme: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    val colorScheme = if (darkTheme) OboeruDarkColorScheme else OboeruLightColorScheme
+
     MaterialTheme(
-        colorScheme = OboeruColorScheme,
+        colorScheme = colorScheme,
         typography = oboeruTypography(),
         content = content
     )
 }
-
