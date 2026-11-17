@@ -1,5 +1,6 @@
 package com.acs.oboeruapp
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,9 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,9 +43,7 @@ fun App() {
         val topLevelRoutes = remember {
             setOf(
                 Screen.Home::class,
-                Screen.MyJapanese::class,
-                Screen.Statistics::class,
-                Screen.More::class
+                Screen.MyJapanese::class
             )
         }
 
@@ -57,7 +58,12 @@ fun App() {
             Scaffold(
                 bottomBar = {
                     if (showBottomNav) {
-                        AppBottomNavigationBar(navController)
+                        AppBottomNavigationBar(
+                            navController = navController,
+                            onAddClick = {
+                                navController.navigate(Screen.ChooseLearningSpaceTemplate)
+                            }
+                        )
                     }
                 }
             ) { innerPadding ->
@@ -80,7 +86,18 @@ fun App() {
                             }
                         )
                     }
-                    composable<Screen.MyJapanese> { }
+                    composable<Screen.MyJapanese> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "My Japanese",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
                     composable<Screen.Statistics> { }
                     composable<Screen.More> { }
                     composable<Screen.ChooseLearningSpaceTemplate> {

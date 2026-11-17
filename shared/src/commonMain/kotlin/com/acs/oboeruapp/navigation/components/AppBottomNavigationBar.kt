@@ -10,12 +10,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,11 +52,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.acs.oboeruapp.navigation.BottomNavItem
 import com.acs.oboeruapp.navigation.bottomNavItems
+import oboeruapp.shared.generated.resources.Res
+import oboeruapp.shared.generated.resources.ic_add
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun AppBottomNavigationBar(
     navController: NavHostController,
+    onAddClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -83,17 +85,19 @@ fun AppBottomNavigationBar(
         )
     )
 
-    Box(
+    Row(
         modifier = modifier
             .fillMaxWidth()
             .windowInsetsPadding(WindowInsets.navigationBars)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        contentAlignment = Alignment.Center,
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
+        // 1. Segmented Tab Bar Capsule (Home & My Japanese)
         BoxWithConstraints(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(62.dp)
+                .weight(1f)
+                .height(56.dp)
                 .shadow(
                     elevation = 16.dp,
                     shape = CircleShape,
@@ -114,19 +118,19 @@ fun AppBottomNavigationBar(
             val indicatorOffset by animateDpAsState(
                 targetValue = tabWidth * selectedIndex,
                 animationSpec = spring(
-                    dampingRatio = 0.78f,
+                    dampingRatio = 0.82f,
                     stiffness = Spring.StiffnessMediumLow,
                 ),
             )
 
-            // Sliding active pill indicator (matching sample-app.jpeg active pill)
+            // Sliding active pill indicator (matching "Overview" in sample)
             Box(
                 modifier = Modifier
                     .offset(x = indicatorOffset)
                     .width(tabWidth)
                     .fillMaxHeight()
                     .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.10f))
+                    .background(Color.White.copy(alpha = 0.12f))
             )
 
             Row(
@@ -136,7 +140,7 @@ fun AppBottomNavigationBar(
                 bottomNavItems.forEachIndexed { index, item ->
                     val selected = index == selectedIndex
 
-                    BottomNavItemView(
+                    BottomNavTabItem(
                         item = item,
                         selected = selected,
                         onClick = {
@@ -153,39 +157,89 @@ fun AppBottomNavigationBar(
                 }
             }
         }
+
+        // 2. Separate Action Button Pill ("+")
+        val addInteractionSource = remember { MutableInteractionSource() }
+        val isAddPressed by addInteractionSource.collectIsPressedAsState()
+        val addScale by animateFloatAsState(
+            targetValue = if (isAddPressed) 0.92f else 1f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMedium,
+            ),
+        )
+
+        Box(
+            modifier = Modifier
+                .width(74.dp)
+                .height(56.dp)
+                .graphicsLayer {
+                    scaleX = addScale
+                    scaleY = addScale
+                }
+                .shadow(
+                    elevation = 16.dp,
+                    shape = CircleShape,
+                    ambientColor = Color.Black.copy(alpha = 0.40f),
+                    spotColor = Color.Black.copy(alpha = 0.50f),
+                )
+                .clip(CircleShape)
+                .background(brush = glassSurfaceBrush)
+                .border(
+                    width = 1.dp,
+                    brush = glassBorderBrush,
+                    shape = CircleShape,
+                )
+                .clickable(
+                    interactionSource = addInteractionSource,
+                    indication = null,
+                    role = Role.Button,
+                    onClick = onAddClick,
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = vectorResource(Res.drawable.ic_add),
+                contentDescription = "Add",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp),
+            )
+        }
     }
 }
 
 @Composable
-private fun BottomNavItemView(
+private fun BottomNavTabItem(
     item: BottomNavItem,
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val contentColor by animateColorAsState(
-        targetValue = if (selected) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.onSurface
-        },
-        animationSpec = tween(durationMillis = 150),
-    )
-
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
-        targetValue = if (selected) 1.03f else 1f,
+        targetValue = if (isPressed) 0.95f else 1f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium,
         ),
     )
 
-    Column(
+    val contentColor by animateColorAsState(
+        targetValue = if (selected) {
+            Color.White
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        animationSpec = tween(durationMillis = 180),
+    )
+
+    Box(
         modifier = modifier
             .fillMaxHeight()
             .clip(CircleShape)
             .clickable(
-                interactionSource = remember { MutableInteractionSource() },
+                interactionSource = interactionSource,
                 indication = null,
                 role = Role.Tab,
                 onClick = onClick,
@@ -194,21 +248,12 @@ private fun BottomNavItemView(
                 scaleX = scale
                 scaleY = scale
             }
-            .padding(horizontal = 4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+            .padding(horizontal = 12.dp),
+        contentAlignment = Alignment.Center,
     ) {
-        Icon(
-            imageVector = vectorResource(item.icon),
-            contentDescription = item.label,
-            tint = contentColor,
-            modifier = Modifier.size(22.dp),
-        )
-        Spacer(Modifier.height(2.dp))
         Text(
             text = item.label,
-            fontSize = 10.sp,
-            lineHeight = 12.sp,
+            fontSize = 15.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
             color = contentColor,
             maxLines = 1,
@@ -217,4 +262,3 @@ private fun BottomNavItemView(
         )
     }
 }
-
