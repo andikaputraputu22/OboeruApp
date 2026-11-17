@@ -1,6 +1,7 @@
 package com.acs.oboeruapp.features.deck.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,11 +37,18 @@ fun DeckHeaderCard(
     onMenuClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val cardShape = RoundedCornerShape(28.dp)
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(180.dp)
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+            .clip(cardShape)
+            .border(
+                width = 1.dp,
+                color = Color.White.copy(alpha = 0.08f),
+                shape = cardShape
+            ),
     ) {
         AsyncImage(
             model = header.backgroundImageUrl,

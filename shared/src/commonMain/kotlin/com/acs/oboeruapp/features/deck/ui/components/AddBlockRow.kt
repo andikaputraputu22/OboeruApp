@@ -27,7 +27,7 @@ fun AddBlockRow(
     modifier: Modifier = Modifier,
 ) {
     val borderColor = MaterialTheme.colorScheme.outline
-    val cornerRadius = 16.dp
+    val cornerRadius = 28.dp
 
     Row(
         modifier = modifier
