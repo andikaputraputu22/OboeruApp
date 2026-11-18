@@ -25,10 +25,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.acs.oboeruapp.core.designsystem.theme.OboeruTheme
 import com.acs.oboeruapp.features.home.ui.HomeScreen
-import com.acs.oboeruapp.features.learningspace.ui.screens.ChooseTemplateScreen
-import com.acs.oboeruapp.features.learningspace.ui.screens.CustomizeLearningSpaceScreen
-import com.acs.oboeruapp.features.learningspace.ui.screens.LearningSpaceCreatedScreen
-import com.acs.oboeruapp.features.learningspace.ui.screens.ReviewLearningSpaceScreen
 import com.acs.oboeruapp.navigation.Screen
 import com.acs.oboeruapp.navigation.components.AppBottomNavigationBar
 
@@ -61,7 +57,7 @@ fun App() {
                         AppBottomNavigationBar(
                             navController = navController,
                             onAddClick = {
-                                navController.navigate(Screen.ChooseLearningSpaceTemplate)
+                                // TODO: Handle add action
                             }
                         )
                     }
@@ -80,10 +76,7 @@ fun App() {
                 ) {
                     composable<Screen.Home> {
                         HomeScreen(
-                            bottomBarPadding = innerPadding.calculateBottomPadding(),
-                            onAddLearningSpaceClick = {
-                                navController.navigate(Screen.ChooseLearningSpaceTemplate)
-                            }
+                            bottomBarPadding = innerPadding.calculateBottomPadding()
                         )
                     }
                     composable<Screen.MyJapanese> {
@@ -97,49 +90,6 @@ fun App() {
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
-                    }
-                    composable<Screen.Statistics> { }
-                    composable<Screen.More> { }
-                    composable<Screen.ChooseLearningSpaceTemplate> {
-                        ChooseTemplateScreen(
-                            onBackClick = { navController.popBackStack() },
-                            onNextClick = { templateId -> },
-                            onCreateFromScratchClick = {
-                                navController.navigate(Screen.CustomizeLearningSpace)
-                            }
-                        )
-                    }
-                    composable<Screen.CustomizeLearningSpace> {
-                        CustomizeLearningSpaceScreen(
-                            onBackClick = { navController.popBackStack() },
-                            onNextClick = { name, iconId, colorId, description ->
-                                navController.navigate(Screen.ReviewLearningSpace)
-                            }
-                        )
-                    }
-                    composable<Screen.ReviewLearningSpace> {
-                        ReviewLearningSpaceScreen(
-                            onCreateClick = {
-                                navController.navigate(Screen.LearningSpaceCreated) {
-                                    popUpTo(Screen.ChooseLearningSpaceTemplate) { inclusive = true }
-                                }
-                            },
-                            onBackClick = { navController.popBackStack() }
-                        )
-                    }
-                    composable<Screen.LearningSpaceCreated> {
-                        LearningSpaceCreatedScreen(
-                            onGoToHomeClick = {
-                                navController.navigate(Screen.Home) {
-                                    popUpTo(0) { inclusive = true }
-                                }
-                            },
-                            onCreateAnotherClick = {
-                                navController.navigate(Screen.ChooseLearningSpaceTemplate) {
-                                    popUpTo(Screen.LearningSpaceCreated) { inclusive = true }
-                                }
-                            }
-                        )
                     }
                 }
             }
