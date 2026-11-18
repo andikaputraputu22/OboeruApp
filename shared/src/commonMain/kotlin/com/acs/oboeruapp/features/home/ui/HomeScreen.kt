@@ -1,9 +1,7 @@
 package com.acs.oboeruapp.features.home.ui
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -24,40 +22,38 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
+    topBarPadding: Dp = 0.dp,
     bottomBarPadding: Dp = 0.dp
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showAddBlockSheet by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        UserHeader(
-            isAuthenticated = false,
-            photoUrl = null,
-            displayName = null,
-            onProfileClick = {},
-            onNotificationClick = {},
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            top = topBarPadding + 16.dp,
+            end = 16.dp,
+            bottom = bottomBarPadding + 16.dp
         )
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentPadding = PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
-                bottom = bottomBarPadding + 16.dp
+    ) {
+        item(key = "user_header") {
+            UserHeader(
+                isAuthenticated = uiState.isAuthenticated,
+                photoUrl = uiState.photoUrl,
+                displayName = uiState.displayName,
+                onProfileClick = {},
+                onNotificationClick = {},
+                modifier = Modifier.padding(bottom = 16.dp)
             )
-        ) {
-            uiState.deckHeader?.let { header ->
-                item(key = uiState.selectedSpaceId) {
-                    DeckCard(
-                        blocks = uiState.deckBlocks,
-                        onBlockClick = { block -> /* TODO: navigate sesuai block.id */ }
-                    )
-                }
+        }
+
+        uiState.deckHeader?.let { header ->
+            item(key = uiState.selectedSpaceId) {
+                DeckCard(
+                    blocks = uiState.deckBlocks,
+                    onBlockClick = { block -> /* TODO: navigate sesuai block.id */ }
+                )
             }
         }
     }
@@ -72,4 +68,3 @@ fun HomeScreen(
         )
     }
 }
-

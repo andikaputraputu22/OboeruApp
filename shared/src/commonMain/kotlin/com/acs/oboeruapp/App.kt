@@ -69,19 +69,22 @@ fun App() {
                     startDestination = Screen.Home,
                     modifier = Modifier.padding(
                         start = innerPadding.calculateStartPadding(layoutDirection),
-                        top = innerPadding.calculateTopPadding(),
+                        top = 0.dp,
                         end = innerPadding.calculateEndPadding(layoutDirection),
                         bottom = if (showBottomNav) 0.dp else innerPadding.calculateBottomPadding(),
                     )
                 ) {
                     composable<Screen.Home> {
                         HomeScreen(
+                            topBarPadding = innerPadding.calculateTopPadding(),
                             bottomBarPadding = innerPadding.calculateBottomPadding()
                         )
                     }
                     composable<Screen.MyJapanese> {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = innerPadding.calculateTopPadding()),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
