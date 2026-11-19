@@ -9,4 +9,7 @@ sealed class Screen {
 
     @Serializable
     data object MyJapanese : Screen()
+
+    @Serializable
+    data object Profile : Screen()
 }
