@@ -23,7 +23,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
     topBarPadding: Dp = 0.dp,
-    bottomBarPadding: Dp = 0.dp
+    bottomBarPadding: Dp = 0.dp,
+    onProfileClick: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showAddBlockSheet by remember { mutableStateOf(false) }
@@ -42,7 +43,7 @@ fun HomeScreen(
                 isAuthenticated = uiState.isAuthenticated,
                 photoUrl = uiState.photoUrl,
                 displayName = uiState.displayName,
-                onProfileClick = {},
+                onProfileClick = onProfileClick,
                 onNotificationClick = {},
                 modifier = Modifier.padding(bottom = 16.dp)
             )

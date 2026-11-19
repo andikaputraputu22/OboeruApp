@@ -1,5 +1,10 @@
 package com.acs.oboeruapp
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -25,6 +30,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.acs.oboeruapp.core.designsystem.theme.OboeruTheme
 import com.acs.oboeruapp.features.home.ui.HomeScreen
+import com.acs.oboeruapp.features.profile.ui.ProfileScreen
 import com.acs.oboeruapp.navigation.Screen
 import com.acs.oboeruapp.navigation.components.AppBottomNavigationBar
 
@@ -71,20 +77,45 @@ fun App() {
                         start = innerPadding.calculateStartPadding(layoutDirection),
                         top = 0.dp,
                         end = innerPadding.calculateEndPadding(layoutDirection),
-                        bottom = if (showBottomNav) 0.dp else innerPadding.calculateBottomPadding(),
+                        bottom = 0.dp,
                     )
                 ) {
-                    composable<Screen.Home> {
+                    composable<Screen.Home>(
+                        exitTransition = {
+                            if (targetState.destination.hasRoute(Screen.Profile::class)) {
+                                slideOutOfContainer(
+                                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                                    animationSpec = tween(350, easing = FastOutSlowInEasing),
+                                    targetOffset = { it / 3 }
+                                ) + fadeOut(animationSpec = tween(300))
+                            } else null
+                        },
+                        popEnterTransition = {
+                            if (initialState.destination.hasRoute(Screen.Profile::class)) {
+                                slideIntoContainer(
+                                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                                    animationSpec = tween(350, easing = FastOutSlowInEasing),
+                                    initialOffset = { it / 3 }
+                                ) + fadeIn(animationSpec = tween(300))
+                            } else null
+                        }
+                    ) {
                         HomeScreen(
                             topBarPadding = innerPadding.calculateTopPadding(),
-                            bottomBarPadding = innerPadding.calculateBottomPadding()
+                            bottomBarPadding = innerPadding.calculateBottomPadding(),
+                            onProfileClick = {
+                                navController.navigate(Screen.Profile)
+                            }
                         )
                     }
                     composable<Screen.MyJapanese> {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(top = innerPadding.calculateTopPadding()),
+                                .padding(
+                                    top = innerPadding.calculateTopPadding(),
+                                    bottom = innerPadding.calculateBottomPadding(),
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -93,6 +124,28 @@ fun App() {
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
+                    }
+                    composable<Screen.Profile>(
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                                animationSpec = tween(350, easing = FastOutSlowInEasing)
+                            ) + fadeIn(animationSpec = tween(300))
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.End,
+                                animationSpec = tween(350, easing = FastOutSlowInEasing)
+                            ) + fadeOut(animationSpec = tween(300))
+                        }
+                    ) {
+                        ProfileScreen(
+                            topBarPadding = innerPadding.calculateTopPadding(),
+                            bottomBarPadding = innerPadding.calculateBottomPadding(),
+                            onBackClick = {
+                                navController.popBackStack()
+                            }
+                        )
                     }
                 }
             }
