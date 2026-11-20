@@ -30,6 +30,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.acs.oboeruapp.core.designsystem.theme.OboeruTheme
 import com.acs.oboeruapp.features.home.ui.HomeScreen
+import com.acs.oboeruapp.features.onboarding.ui.LandingScreen
+import com.acs.oboeruapp.features.onboarding.ui.OnboardingScreen
 import com.acs.oboeruapp.features.profile.ui.ProfileScreen
 import com.acs.oboeruapp.navigation.Screen
 import com.acs.oboeruapp.navigation.components.AppBottomNavigationBar
@@ -72,7 +74,7 @@ fun App() {
                 val layoutDirection = LocalLayoutDirection.current
                 NavHost(
                     navController = navController,
-                    startDestination = Screen.Home,
+                    startDestination = Screen.Onboarding,
                     modifier = Modifier.padding(
                         start = innerPadding.calculateStartPadding(layoutDirection),
                         top = 0.dp,
@@ -80,6 +82,48 @@ fun App() {
                         bottom = 0.dp,
                     )
                 ) {
+                    composable<Screen.Onboarding>(
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                                animationSpec = tween(350, easing = FastOutSlowInEasing)
+                            ) + fadeOut(animationSpec = tween(300))
+                        }
+                    ) {
+                        OnboardingScreen(
+                            topBarPadding = innerPadding.calculateTopPadding(),
+                            bottomBarPadding = innerPadding.calculateBottomPadding(),
+                            onFinishOnboarding = {
+                                navController.navigate(Screen.Landing)
+                            }
+                        )
+                    }
+
+                    composable<Screen.Landing>(
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                                animationSpec = tween(350, easing = FastOutSlowInEasing)
+                            ) + fadeIn(animationSpec = tween(300))
+                        },
+                        exitTransition = {
+                            fadeOut(animationSpec = tween(300))
+                        }
+                    ) {
+                        val navigateToHome = {
+                            navController.navigate(Screen.Home) {
+                                popUpTo(Screen.Onboarding) { inclusive = true }
+                            }
+                        }
+
+                        LandingScreen(
+                            topBarPadding = innerPadding.calculateTopPadding(),
+                            bottomBarPadding = innerPadding.calculateBottomPadding(),
+                            onAppleSignInClick = navigateToHome,
+                            onGoogleSignInClick = navigateToHome,
+                        )
+                    }
+
                     composable<Screen.Home>(
                         exitTransition = {
                             if (targetState.destination.hasRoute(Screen.Profile::class)) {
@@ -108,6 +152,7 @@ fun App() {
                             }
                         )
                     }
+
                     composable<Screen.MyJapanese> {
                         Box(
                             modifier = Modifier
@@ -125,6 +170,7 @@ fun App() {
                             )
                         }
                     }
+
                     composable<Screen.Profile>(
                         enterTransition = {
                             slideIntoContainer(
