@@ -47,10 +47,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.acs.oboeruapp.navigation.BottomNavItem
+import com.acs.oboeruapp.navigation.Screen
 import com.acs.oboeruapp.navigation.bottomNavItems
 import oboeruapp.shared.generated.resources.Res
 import oboeruapp.shared.generated.resources.ic_add
@@ -145,7 +145,7 @@ fun AppBottomNavigationBar(
                         selected = selected,
                         onClick = {
                             navController.navigate(item.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
+                                popUpTo(Screen.Home) {
                                     saveState = true
                                 }
                                 launchSingleTop = true
