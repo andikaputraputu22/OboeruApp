@@ -2,6 +2,7 @@ package com.acs.oboeruapp.features.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.acs.oboeruapp.features.auth.domain.model.AuthState
 import com.acs.oboeruapp.features.auth.domain.repository.AuthRepository
 import com.acs.oboeruapp.features.deck.domain.repository.DeckRepository
 import com.acs.oboeruapp.features.home.ui.HomeUiState
@@ -35,14 +36,19 @@ class HomeViewModel(
         }
 
     val uiState: StateFlow<HomeUiState> = combine(
+        authRepository.authState,
         spacesState,
         selectedSpaceId,
         deckState
-    ) { spaces, selectedId, deck ->
+    ) { authState, spaces, selectedId, deck ->
+        val authenticatedUser = (authState as? AuthState.Authenticated)?.user
+        val resolvedName = authenticatedUser?.displayName
+            ?: authenticatedUser?.email?.substringBefore("@")
+
         HomeUiState(
-            isAuthenticated = false,
-            photoUrl = null,
-            displayName = null,
+            isAuthenticated = authenticatedUser != null,
+            photoUrl = authenticatedUser?.photoUrl,
+            displayName = resolvedName,
             learningSpaces = spaces,
             selectedSpaceId = selectedId ?: spaces.firstOrNull()?.id ?: "",
             deckHeader = deck.header,

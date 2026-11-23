@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.acs.oboeruapp.core.designsystem.components.ProfileAvatar
 import oboeruapp.shared.generated.resources.Res
@@ -59,9 +60,11 @@ fun UserHeader(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = if (isAuthenticated) displayName ?: "" else "Oboeru",
+                    text = if (isAuthenticated) displayName.orEmpty().ifBlank { "Oboeru" } else "Oboeru",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
