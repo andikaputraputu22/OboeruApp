@@ -26,6 +26,7 @@ fun ProfileItemRow(
     icon: DrawableResource,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     trailingText: String? = null,
     trailingIcon: DrawableResource? = null,
     iconTint: Color = MaterialTheme.colorScheme.onSurface,
@@ -34,7 +35,7 @@ fun ProfileItemRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

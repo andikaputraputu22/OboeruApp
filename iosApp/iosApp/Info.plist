@@ -6,9 +6,18 @@
 	<true/>
 
     <key>UIUserInterfaceStyle</key>
-    <string>Light</string>
+    <string>Dark</string>
 
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Oboeru needs access to your photo library so you can choose a cover photo for your Learning Space.</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>oboeruapp</string>
+            </array>
+        </dict>
+    </array>
 </dict>
 </plist>
