@@ -30,66 +30,77 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.acs.oboeruapp.features.deck.domain.model.DeckBlock
+import com.acs.oboeruapp.features.deck.domain.model.DeckActivityType
+import com.acs.oboeruapp.features.deck.domain.model.DeckTopic
+import com.acs.oboeruapp.features.deck.domain.model.UserDeckBlock
 import oboeruapp.shared.generated.resources.Res
+import oboeruapp.shared.generated.resources.ic_book
+import oboeruapp.shared.generated.resources.ic_check
+import oboeruapp.shared.generated.resources.ic_grammar
 import oboeruapp.shared.generated.resources.ic_play
 import oboeruapp.shared.generated.resources.ic_play_outline
+import oboeruapp.shared.generated.resources.ic_timer
+import oboeruapp.shared.generated.resources.ic_vocabulary
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.vectorResource
-import kotlin.math.abs
 
-/**
- * Returns a distinct neon/pastel accent color for the block,
- * matching the color palette in sample-block.jpeg.
- */
-fun getBlockAccentColor(blockId: String): Color {
-    return when (blockId.lowercase()) {
-        "vocab", "vocabulary" -> Color(0xFF38BDF8) // Cyan / Sky Blue (Card 1)
-        "kanji" -> Color(0xFF818CF8)               // Indigo / Periwinkle (Card 2)
-        "grammar" -> Color(0xFF4ADE80)             // Emerald / Mint (Card 3/4)
-        "review", "timer" -> Color(0xFFFB923C)     // Warm Coral / Orange (Card 6)
-        else -> {
-            val palette = listOf(
-                Color(0xFF38BDF8),
-                Color(0xFF818CF8),
-                Color(0xFF4ADE80),
-                Color(0xFFFB923C),
-                Color(0xFFA78BFA),
-                Color(0xFFF472B6)
-            )
-            palette[abs(blockId.hashCode()) % palette.size]
-        }
+fun getBlockAccentColor(topic: DeckTopic, activityType: DeckActivityType): Color =
+    when {
+        activityType == DeckActivityType.REVIEW || topic == DeckTopic.ALL_REVIEW -> Color(0xFFFB923C)
+        topic == DeckTopic.HIRAGANA && activityType == DeckActivityType.CHART -> Color(0xFF38BDF8)
+        topic == DeckTopic.HIRAGANA && activityType == DeckActivityType.FLASHCARD -> Color(0xFF818CF8)
+        topic == DeckTopic.HIRAGANA && activityType == DeckActivityType.QUIZ -> Color(0xFF4ADE80)
+        topic == DeckTopic.KATAKANA && activityType == DeckActivityType.CHART -> Color(0xFF22D3EE)
+        topic == DeckTopic.KATAKANA && activityType == DeckActivityType.FLASHCARD -> Color(0xFFA78BFA)
+        topic == DeckTopic.KATAKANA && activityType == DeckActivityType.QUIZ -> Color(0xFF2DD4BF)
+        else -> Color(0xFF38BDF8)
     }
-}
+
+fun getBlockIcon(activityType: DeckActivityType): DrawableResource =
+    when (activityType) {
+        DeckActivityType.CHART -> Res.drawable.ic_book
+        DeckActivityType.FLASHCARD -> Res.drawable.ic_vocabulary
+        DeckActivityType.QUIZ -> Res.drawable.ic_grammar
+        DeckActivityType.REVIEW -> Res.drawable.ic_timer
+    }
 
 @Composable
 fun DeckBlockCard(
-    block: DeckBlock,
+    block: UserDeckBlock,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val accentColor = getBlockAccentColor(block.id)
+    val accentColor = getBlockAccentColor(block.topic, block.activityType)
+    val icon = getBlockIcon(block.activityType)
 
-    val (subtitle, badgeText, progress) = when (block) {
-        is DeckBlock.ProgressBlock -> {
-            val sub = "${block.level} · Goal: ${block.target} items"
-            val badge = if (block.current >= block.target) {
-                "Completed"
-            } else {
-                "${block.target - block.current} items left"
-            }
-            val prog = (block.current.toFloat() / block.target.coerceAtLeast(1).toFloat()).coerceIn(0f, 1f)
-            Triple(sub, badge, prog)
+    val (subtitle, badgeText) = when (block.activityType) {
+        DeckActivityType.CHART -> {
+            "${block.topic.badgeLabel} · 104 characters" to "Reference table"
         }
-        is DeckBlock.SimpleBlock -> {
-            val badge = if (block.subtitle.contains("due", ignoreCase = true)) {
-                "Start review"
+
+        DeckActivityType.REVIEW -> {
+            if (block.dueCount <= 0) {
+                "All caught up for now" to "Up to date"
             } else {
-                "Tap to start"
+                val unit = if (block.dueCount == 1) "item" else "items"
+                "${block.dueCount} $unit due" to "Start review"
             }
-            Triple(block.subtitle, badge, null)
+        }
+
+        DeckActivityType.FLASHCARD,
+        DeckActivityType.QUIZ -> {
+            val sub = "${block.topic.badgeLabel} · ${block.completedToday}/${block.dailyTarget} today"
+            val badge = if (block.isCompletedToday) {
+                "✓ Done today"
+            } else {
+                val remaining = (block.dailyTarget - block.completedToday).coerceAtLeast(0)
+                "$remaining left today"
+            }
+            sub to badge
         }
     }
 
+    val progress = block.progressFraction
     val cardShape = RoundedCornerShape(28.dp)
 
     Box(
@@ -105,14 +116,17 @@ fun DeckBlockCard(
             .background(MaterialTheme.colorScheme.surface)
             .border(
                 width = 1.dp,
-                color = Color.White.copy(alpha = 0.07f),
+                color = if (block.isCompletedToday) {
+                    accentColor.copy(alpha = 0.25f)
+                } else {
+                    Color.White.copy(alpha = 0.07f)
+                },
                 shape = cardShape,
             )
             .clickable(onClick = onClick)
     ) {
-        // Subtle background icon watermark (inspired by sample-block.jpeg)
         Icon(
-            imageVector = vectorResource(block.icon),
+            imageVector = vectorResource(icon),
             contentDescription = null,
             tint = accentColor.copy(alpha = 0.07f),
             modifier = Modifier
@@ -127,9 +141,8 @@ fun DeckBlockCard(
                 .padding(horizontal = 18.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Left main icon
             Icon(
-                imageVector = vectorResource(block.icon),
+                imageVector = vectorResource(icon),
                 contentDescription = null,
                 tint = accentColor,
                 modifier = Modifier.size(32.dp),
@@ -137,12 +150,11 @@ fun DeckBlockCard(
 
             Spacer(Modifier.width(16.dp))
 
-            // Center info column
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = block.title,
+                    text = block.displayTitle,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
                     color = accentColor,
@@ -162,14 +174,23 @@ fun DeckBlockCard(
 
                 Spacer(Modifier.height(6.dp))
 
-                // Pill Badge (status / timer tag)
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.32f))
+                        .background(
+                            if (block.isCompletedToday) {
+                                accentColor.copy(alpha = 0.14f)
+                            } else {
+                                Color.Black.copy(alpha = 0.32f)
+                            }
+                        )
                         .border(
                             width = 1.dp,
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
+                            color = if (block.isCompletedToday) {
+                                accentColor.copy(alpha = 0.35f)
+                            } else {
+                                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)
+                            },
                             shape = CircleShape,
                         )
                         .padding(horizontal = 10.dp, vertical = 3.dp)
@@ -178,16 +199,18 @@ fun DeckBlockCard(
                         text = badgeText,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (block.isCompletedToday) {
+                            accentColor
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                     )
                 }
             }
 
             Spacer(Modifier.width(12.dp))
 
-            // Right action / play button
             if (progress != null) {
-                // Card with circular progress ring + solid play triangle (Card 2 style)
                 Box(
                     modifier = Modifier.size(42.dp),
                     contentAlignment = Alignment.Center,
@@ -201,16 +224,17 @@ fun DeckBlockCard(
                         strokeCap = StrokeCap.Round,
                     )
                     Icon(
-                        imageVector = vectorResource(Res.drawable.ic_play),
-                        contentDescription = "Start",
+                        imageVector = vectorResource(
+                            if (block.isCompletedToday) Res.drawable.ic_check else Res.drawable.ic_play
+                        ),
+                        contentDescription = if (block.isCompletedToday) "Completed" else "Start",
                         tint = accentColor,
                         modifier = Modifier
                             .size(14.dp)
-                            .offset(x = 1.dp),
+                            .offset(x = if (block.isCompletedToday) 0.dp else 1.dp),
                     )
                 }
             } else {
-                // Card with outline play triangle (Card 1, 3, 4, 5, 6 style)
                 Box(
                     modifier = Modifier.size(42.dp),
                     contentAlignment = Alignment.Center,
