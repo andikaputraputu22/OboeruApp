@@ -1,0 +1,69 @@
+CREATE TABLE user_item_progress (
+    item_type TEXT NOT NULL,
+    item_id TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'NEW',
+    srs_stage INTEGER NOT NULL DEFAULT 0,
+    next_review_at INTEGER,
+    last_reviewed_at INTEGER,
+    correct_count INTEGER NOT NULL DEFAULT 0,
+    wrong_count INTEGER NOT NULL DEFAULT 0,
+    updated_at INTEGER NOT NULL,
+    is_synced INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (item_type, item_id)
+);
+
+CREATE INDEX idx_progress_due ON user_item_progress(next_review_at);
+CREATE INDEX idx_progress_status ON user_item_progress(item_type, status);
+
+selectByKey:
+SELECT * FROM user_item_progress
+WHERE item_type = :itemType AND item_id = :itemId;
+
+selectDueItems:
+SELECT * FROM user_item_progress
+WHERE next_review_at IS NOT NULL
+  AND next_review_at <= :nowEpochMillis
+ORDER BY next_review_at ASC;
+
+countDueItems:
+SELECT COUNT(*) FROM user_item_progress
+WHERE next_review_at IS NOT NULL
+  AND next_review_at <= :nowEpochMillis;
+
+upsert:
+INSERT OR REPLACE INTO user_item_progress(
+    item_type,
+    item_id,
+    status,
+    srs_stage,
+    next_review_at,
+    last_reviewed_at,
+    correct_count,
+    wrong_count,
+    updated_at,
+    is_synced
+) VALUES (
+    :itemType,
+    :itemId,
+    :status,
+    :srsStage,
+    :nextReviewAt,
+    :lastReviewedAt,
+    :correctCount,
+    :wrongCount,
+    :updatedAt,
+    :isSynced
+);
+
+selectUnsynced:
+SELECT * FROM user_item_progress WHERE is_synced = 0;
+
+markSynced:
+UPDATE user_item_progress
+SET is_synced = 1
+WHERE item_type = :itemType
+  AND item_id = :itemId
+  AND updated_at = :updatedAt;
+
+deleteAll:
+DELETE FROM user_item_progress;

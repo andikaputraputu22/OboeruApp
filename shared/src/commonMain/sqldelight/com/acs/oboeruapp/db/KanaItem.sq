@@ -1,0 +1,94 @@
+CREATE TABLE kana_item (
+    id TEXT NOT NULL PRIMARY KEY,
+    script_type TEXT NOT NULL,
+    category TEXT NOT NULL,
+    group_key TEXT NOT NULL,
+    character TEXT NOT NULL,
+    romaji TEXT NOT NULL,
+    example_word TEXT,
+    example_meaning TEXT,
+    row_index INTEGER NOT NULL,
+    col_index INTEGER NOT NULL,
+    sort_order INTEGER NOT NULL
+);
+
+CREATE INDEX idx_kana_script_category ON kana_item(script_type, category, sort_order);
+
+countAll:
+SELECT COUNT(*) FROM kana_item;
+
+insertOrReplace:
+INSERT OR REPLACE INTO kana_item(
+    id,
+    script_type,
+    category,
+    group_key,
+    character,
+    romaji,
+    example_word,
+    example_meaning,
+    row_index,
+    col_index,
+    sort_order
+) VALUES (
+    :id,
+    :scriptType,
+    :category,
+    :groupKey,
+    :character,
+    :romaji,
+    :exampleWord,
+    :exampleMeaning,
+    :rowIndex,
+    :colIndex,
+    :sortOrder
+);
+
+selectById:
+SELECT * FROM kana_item WHERE id = :id;
+
+selectByScript:
+SELECT * FROM kana_item
+WHERE script_type = :scriptType
+ORDER BY sort_order ASC;
+
+selectByScriptAndCategory:
+SELECT * FROM kana_item
+WHERE script_type = :scriptType AND category = :category
+ORDER BY sort_order ASC;
+
+selectByScriptWithProgress:
+SELECT
+    k.id,
+    k.script_type,
+    k.category,
+    k.group_key,
+    k.character,
+    k.romaji,
+    k.example_word,
+    k.example_meaning,
+    k.row_index,
+    k.col_index,
+    k.sort_order,
+    COALESCE(p.status, 'NEW') AS progress_status,
+    COALESCE(p.srs_stage, 0) AS srs_stage,
+    p.next_review_at,
+    p.last_reviewed_at,
+    COALESCE(p.correct_count, 0) AS correct_count,
+    COALESCE(p.wrong_count, 0) AS wrong_count
+FROM kana_item k
+LEFT JOIN user_item_progress p
+    ON p.item_type = 'KANA' AND p.item_id = k.id
+WHERE k.script_type = :scriptType
+ORDER BY k.sort_order ASC;
+
+selectMasterySummaryByScript:
+SELECT
+    k.script_type,
+    COUNT(*) AS total_count,
+    COALESCE(SUM(CASE WHEN p.status = 'MASTERED' THEN 1 ELSE 0 END), 0) AS mastered_count,
+    COALESCE(SUM(CASE WHEN p.status = 'LEARNING' THEN 1 ELSE 0 END), 0) AS learning_count
+FROM kana_item k
+LEFT JOIN user_item_progress p
+    ON p.item_type = 'KANA' AND p.item_id = k.id
+GROUP BY k.script_type;

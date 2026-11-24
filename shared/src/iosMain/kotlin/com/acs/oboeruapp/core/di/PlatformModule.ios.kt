@@ -3,6 +3,8 @@ package com.acs.oboeruapp.core.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.acs.oboeruapp.core.data.local.DATA_STORE_FILE_NAME
+import com.acs.oboeruapp.core.data.local.DatabaseDriverFactory
+import com.acs.oboeruapp.core.data.local.IosDatabaseDriverFactory
 import com.acs.oboeruapp.core.data.local.createAppDataStore
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.module.Module
@@ -24,5 +26,9 @@ actual val platformModule: Module = module {
             )
             requireNotNull(documentDirectory?.path) + "/$DATA_STORE_FILE_NAME"
         }
+    }
+
+    single<DatabaseDriverFactory> {
+        IosDatabaseDriverFactory()
     }
 }

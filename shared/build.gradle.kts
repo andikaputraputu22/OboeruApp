@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.sqldelight)
 }
 
 @CacheableTask
@@ -115,9 +116,11 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.uiTooling)
             implementation(libs.ktor.client.android)
+            implementation(libs.sqldelight.android.driver)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.sqldelight.native.driver)
         }
         commonMain {
             kotlin.srcDir(generateAppConfig.flatMap { it.outputDir })
@@ -142,6 +145,7 @@ kotlin {
                 implementation(libs.supabase.auth)
                 implementation(libs.androidx.datastore.preferences.core)
                 implementation(libs.okio)
+                implementation(libs.sqldelight.coroutines)
             }
         }
         commonTest.dependencies {
@@ -152,4 +156,13 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+sqldelight {
+    databases {
+        create("OboeruDatabase") {
+            packageName.set("com.acs.oboeruapp.db")
+        }
+    }
+    linkSqlite.set(true)
 }
