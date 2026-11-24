@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.acs.oboeruapp.features.deck.domain.model.DeckBlock
+import com.acs.oboeruapp.features.deck.domain.model.UserDeckBlock
 
 @Composable
 fun DeckCard(
-    blocks: List<DeckBlock>,
-    onBlockClick: (DeckBlock) -> Unit,
+    blocks: List<UserDeckBlock>,
+    onBlockClick: (UserDeckBlock) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(

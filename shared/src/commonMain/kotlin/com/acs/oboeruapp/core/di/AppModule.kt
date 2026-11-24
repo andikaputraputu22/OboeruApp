@@ -16,8 +16,6 @@ import com.acs.oboeruapp.features.kana.data.repository.KanaRepositoryImpl
 import com.acs.oboeruapp.features.kana.data.repository.ProgressRepositoryImpl
 import com.acs.oboeruapp.features.kana.domain.repository.KanaRepository
 import com.acs.oboeruapp.features.kana.domain.repository.ProgressRepository
-import com.acs.oboeruapp.features.learningspace.data.repository.LearningSpaceRepositoryImpl
-import com.acs.oboeruapp.features.learningspace.domain.repository.LearningSpaceRepository
 import com.acs.oboeruapp.features.onboarding.data.repository.OnboardingRepositoryImpl
 import com.acs.oboeruapp.features.onboarding.domain.repository.OnboardingRepository
 import com.acs.oboeruapp.features.profile.ProfileViewModel
@@ -35,8 +33,13 @@ val repositoryModule = module {
             timeProvider = get(),
         )
     }
-    single<LearningSpaceRepository> { LearningSpaceRepositoryImpl() }
-    single<DeckRepository> { DeckRepositoryImpl() }
+    single<DeckRepository> {
+        DeckRepositoryImpl(
+            database = get(),
+            progressRepository = get(),
+            timeProvider = get(),
+        )
+    }
 }
 
 val viewModelModule = module {
@@ -54,8 +57,7 @@ val viewModelModule = module {
     viewModel {
         HomeViewModel(
             authRepository = get(),
-            learningSpaceRepository = get(),
-            deckRepository = get()
+            deckRepository = get(),
         )
     }
     viewModel {
