@@ -137,6 +137,8 @@ kotlin {
                 implementation(libs.koin.compose)
                 implementation(libs.koin.compose.viewmodel)
                 implementation(libs.kotlinx.serialization.core)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.datetime)
                 implementation(libs.compose.navigation)
                 implementation(libs.ktor.client.core)
                 implementation(libs.coil.compose)

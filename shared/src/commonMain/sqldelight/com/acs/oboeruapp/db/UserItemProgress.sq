@@ -30,6 +30,10 @@ SELECT COUNT(*) FROM user_item_progress
 WHERE next_review_at IS NOT NULL
   AND next_review_at <= :nowEpochMillis;
 
+selectScheduledReviewTimestamps:
+SELECT COALESCE(next_review_at, 0) AS review_at FROM user_item_progress
+WHERE next_review_at IS NOT NULL;
+
 upsert:
 INSERT OR REPLACE INTO user_item_progress(
     item_type,

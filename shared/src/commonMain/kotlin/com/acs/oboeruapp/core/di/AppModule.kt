@@ -1,14 +1,21 @@
 package com.acs.oboeruapp.core.di
 
 import com.acs.oboeruapp.AppViewModel
+import com.acs.oboeruapp.core.data.local.KanaDatabaseSeeder
 import com.acs.oboeruapp.core.data.local.provideOboeruDatabase
 import com.acs.oboeruapp.core.data.remote.provideSupabaseClient
+import com.acs.oboeruapp.core.domain.time.SystemTimeProvider
+import com.acs.oboeruapp.core.domain.time.TimeProvider
 import com.acs.oboeruapp.features.auth.AuthViewModel
 import com.acs.oboeruapp.features.auth.data.repository.AuthRepositoryImpl
 import com.acs.oboeruapp.features.auth.domain.repository.AuthRepository
 import com.acs.oboeruapp.features.deck.data.repository.DeckRepositoryImpl
 import com.acs.oboeruapp.features.deck.domain.repository.DeckRepository
 import com.acs.oboeruapp.features.home.HomeViewModel
+import com.acs.oboeruapp.features.kana.data.repository.KanaRepositoryImpl
+import com.acs.oboeruapp.features.kana.data.repository.ProgressRepositoryImpl
+import com.acs.oboeruapp.features.kana.domain.repository.KanaRepository
+import com.acs.oboeruapp.features.kana.domain.repository.ProgressRepository
 import com.acs.oboeruapp.features.learningspace.data.repository.LearningSpaceRepositoryImpl
 import com.acs.oboeruapp.features.learningspace.domain.repository.LearningSpaceRepository
 import com.acs.oboeruapp.features.onboarding.data.repository.OnboardingRepositoryImpl
@@ -20,6 +27,14 @@ import org.koin.dsl.module
 val repositoryModule = module {
     single<AuthRepository> { AuthRepositoryImpl(supabase = get()) }
     single<OnboardingRepository> { OnboardingRepositoryImpl(dataStore = get()) }
+    single<KanaRepository> { KanaRepositoryImpl(database = get(), seeder = get()) }
+    single<ProgressRepository> {
+        ProgressRepositoryImpl(
+            database = get(),
+            seeder = get(),
+            timeProvider = get(),
+        )
+    }
     single<LearningSpaceRepository> { LearningSpaceRepositoryImpl() }
     single<DeckRepository> { DeckRepositoryImpl() }
 }
@@ -51,7 +66,9 @@ val viewModelModule = module {
 }
 
 val databaseModule = module {
+    single<TimeProvider> { SystemTimeProvider() }
     single { provideOboeruDatabase(driverFactory = get()) }
+    single { KanaDatabaseSeeder(database = get()) }
 }
 
 val networkModule = module {
