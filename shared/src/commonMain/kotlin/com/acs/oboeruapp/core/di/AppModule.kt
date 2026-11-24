@@ -1,6 +1,7 @@
 package com.acs.oboeruapp.core.di
 
 import com.acs.oboeruapp.AppViewModel
+import com.acs.oboeruapp.core.data.local.provideOboeruDatabase
 import com.acs.oboeruapp.core.data.remote.provideSupabaseClient
 import com.acs.oboeruapp.features.auth.AuthViewModel
 import com.acs.oboeruapp.features.auth.data.repository.AuthRepositoryImpl
@@ -49,12 +50,17 @@ val viewModelModule = module {
     }
 }
 
+val databaseModule = module {
+    single { provideOboeruDatabase(driverFactory = get()) }
+}
+
 val networkModule = module {
     single { provideSupabaseClient() }
 }
 
 val appModules = listOf(
     platformModule,
+    databaseModule,
     repositoryModule,
     viewModelModule,
     networkModule
