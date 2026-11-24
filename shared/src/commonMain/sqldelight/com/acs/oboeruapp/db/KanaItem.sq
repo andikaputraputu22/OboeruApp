@@ -92,3 +92,29 @@ FROM kana_item k
 LEFT JOIN user_item_progress p
     ON p.item_type = 'KANA' AND p.item_id = k.id
 GROUP BY k.script_type;
+
+selectDueKanaWithProgress:
+SELECT
+    k.id,
+    k.script_type,
+    k.category,
+    k.group_key,
+    k.character,
+    k.romaji,
+    k.example_word,
+    k.example_meaning,
+    k.row_index,
+    k.col_index,
+    k.sort_order,
+    p.status AS progress_status,
+    p.srs_stage,
+    p.next_review_at,
+    p.last_reviewed_at,
+    p.correct_count,
+    p.wrong_count
+FROM kana_item k
+INNER JOIN user_item_progress p
+    ON p.item_type = 'KANA' AND p.item_id = k.id
+WHERE p.next_review_at IS NOT NULL
+  AND p.next_review_at <= :nowEpochMillis
+ORDER BY p.next_review_at ASC;
