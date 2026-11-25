@@ -1,8 +1,10 @@
 package com.acs.oboeruapp.features.home.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +15,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.acs.oboeruapp.core.designsystem.theme.OboeruTheme
 import com.acs.oboeruapp.features.deck.domain.model.DailySummary
@@ -27,6 +33,7 @@ import com.acs.oboeruapp.features.deck.domain.model.DeckActivityType
 import com.acs.oboeruapp.features.deck.domain.model.DeckTopic
 import com.acs.oboeruapp.features.deck.domain.model.UserDeckBlock
 import com.acs.oboeruapp.features.deck.ui.components.DeckCard
+import com.acs.oboeruapp.features.deck.ui.components.ManageBlockBottomSheet
 import com.acs.oboeruapp.features.home.HomeViewModel
 import com.acs.oboeruapp.features.home.ui.components.DailySummaryBanner
 import com.acs.oboeruapp.features.home.ui.components.UserHeader
@@ -41,6 +48,8 @@ fun HomeScreen(
     onBlockClick: (UserDeckBlock) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var managingBlockId by remember { mutableStateOf<String?>(null) }
+    val managingBlock = uiState.deckBlocks.firstOrNull { it.id == managingBlockId }
 
     HomeScreenContent(
         uiState = uiState,
@@ -48,7 +57,17 @@ fun HomeScreen(
         bottomBarPadding = bottomBarPadding,
         onProfileClick = onProfileClick,
         onBlockClick = onBlockClick,
+        onBlockLongClick = { block -> managingBlockId = block.id },
     )
+
+    managingBlock?.let { block ->
+        ManageBlockBottomSheet(
+            block = block,
+            onDismiss = { managingBlockId = null },
+            onSaveDailyTarget = viewModel::updateDailyTarget,
+            onRemoveBlock = viewModel::removeBlock,
+        )
+    }
 }
 
 @Composable
@@ -58,6 +77,7 @@ private fun HomeScreenContent(
     bottomBarPadding: Dp = 0.dp,
     onProfileClick: () -> Unit = {},
     onBlockClick: (UserDeckBlock) -> Unit = {},
+    onBlockLongClick: (UserDeckBlock) -> Unit = {},
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -115,20 +135,33 @@ private fun HomeScreenContent(
             }
         } else if (uiState.deckBlocks.isNotEmpty()) {
             item(key = "deck_blocks_header") {
-                Text(
-                    text = "Study Blocks",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
-                    ),
-                    modifier = Modifier.padding(start = 6.dp, bottom = 10.dp),
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 6.dp, end = 6.dp, bottom = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "Study Blocks",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                        ),
+                    )
+                    Text(
+                        text = "Hold to edit",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
+                    )
+                }
             }
 
             item(key = "deck_blocks") {
                 DeckCard(
                     blocks = uiState.deckBlocks,
                     onBlockClick = onBlockClick,
+                    onBlockLongClick = onBlockLongClick,
                 )
             }
         }

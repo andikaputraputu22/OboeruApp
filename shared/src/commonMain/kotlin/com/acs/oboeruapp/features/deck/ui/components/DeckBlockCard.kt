@@ -1,8 +1,9 @@
 package com.acs.oboeruapp.features.deck.ui.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -64,12 +67,15 @@ fun getBlockIcon(activityType: DeckActivityType): DrawableResource =
         DeckActivityType.REVIEW -> Res.drawable.ic_timer
     }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DeckBlockCard(
     block: UserDeckBlock,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null,
 ) {
+    val haptic = LocalHapticFeedback.current
     val accentColor = getBlockAccentColor(block.topic, block.activityType)
     val icon = getBlockIcon(block.activityType)
 
@@ -123,7 +129,15 @@ fun DeckBlockCard(
                 },
                 shape = cardShape,
             )
-            .clickable(onClick = onClick)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick?.let { handler ->
+                    {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        handler()
+                    }
+                },
+            )
     ) {
         Icon(
             imageVector = vectorResource(icon),

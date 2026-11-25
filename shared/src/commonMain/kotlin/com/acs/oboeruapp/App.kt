@@ -17,7 +17,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -32,6 +34,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.acs.oboeruapp.core.designsystem.theme.OboeruTheme
 import com.acs.oboeruapp.features.auth.domain.model.AuthState
+import com.acs.oboeruapp.features.deck.DeckManagerViewModel
+import com.acs.oboeruapp.features.deck.ui.components.AddBlockBottomSheet
 import com.acs.oboeruapp.features.home.ui.HomeScreen
 import com.acs.oboeruapp.features.onboarding.ui.LandingScreen
 import com.acs.oboeruapp.features.onboarding.ui.OnboardingScreen
@@ -80,6 +84,7 @@ private fun OboeruNavContent(
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination
+    var showAddBlockSheet by remember { mutableStateOf(false) }
 
     val topLevelRoutes = remember {
         setOf(
@@ -94,6 +99,7 @@ private fun OboeruNavContent(
 
     LaunchedEffect(authState) {
         if (authState is AuthState.Unauthenticated) {
+            showAddBlockSheet = false
             val destination = navController.currentDestination ?: return@LaunchedEffect
             val isOnAuthRoute = destination.hierarchy.any {
                 it.hasRoute(Screen.Onboarding::class) || it.hasRoute(Screen.Landing::class)
@@ -113,7 +119,7 @@ private fun OboeruNavContent(
                 AppBottomNavigationBar(
                     navController = navController,
                     onAddClick = {
-                        // TODO: Handle add action
+                        showAddBlockSheet = true
                     }
                 )
             }
@@ -247,5 +253,29 @@ private fun OboeruNavContent(
                 )
             }
         }
+    }
+
+    if (showAddBlockSheet) {
+        val deckManagerViewModel: DeckManagerViewModel = koinViewModel()
+        val activeBlockKeys by deckManagerViewModel.activeBlockKeys.collectAsStateWithLifecycle()
+
+        AddBlockBottomSheet(
+            activeBlockKeys = activeBlockKeys,
+            onDismiss = { showAddBlockSheet = false },
+            onAddBlock = { topic, activityType, dailyTarget ->
+                deckManagerViewModel.addBlock(
+                    topic = topic,
+                    activityType = activityType,
+                    dailyTarget = dailyTarget,
+                    onComplete = { showAddBlockSheet = false },
+                )
+            },
+            onAddStarterPack = { pack ->
+                deckManagerViewModel.addStarterPack(
+                    pack = pack,
+                    onComplete = { showAddBlockSheet = false },
+                )
+            },
+        )
     }
 }
