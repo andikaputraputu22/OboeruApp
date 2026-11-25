@@ -64,3 +64,72 @@ data class DailySummary(
     val totalGoals: Int = 0,
     val streakDays: Int = 0,
 )
+
+data class BlockOptionSpec(
+    val topic: DeckTopic,
+    val activityType: DeckActivityType,
+    val defaultTarget: Int = activityType.defaultDailyTarget,
+)
+
+data class StarterPack(
+    val id: String,
+    val title: String,
+    val subtitle: String,
+    val blocks: List<BlockOptionSpec>,
+)
+
+object DeckCatalog {
+
+    val selectableTopics: List<DeckTopic> = listOf(
+        DeckTopic.HIRAGANA,
+        DeckTopic.KATAKANA,
+        DeckTopic.ALL_REVIEW,
+    )
+
+    fun activitiesForTopic(topic: DeckTopic): List<DeckActivityType> =
+        when (topic) {
+            DeckTopic.HIRAGANA,
+            DeckTopic.KATAKANA -> listOf(
+                DeckActivityType.CHART,
+                DeckActivityType.FLASHCARD,
+                DeckActivityType.QUIZ,
+            )
+
+            DeckTopic.ALL_REVIEW -> listOf(DeckActivityType.REVIEW)
+        }
+
+    val dailyTargetPresets: List<Int> = listOf(5, 10, 15, 20, 30)
+
+    val starterPacks: List<StarterPack> = listOf(
+        StarterPack(
+            id = "pack_hiragana",
+            title = "Hiragana Starter",
+            subtitle = "Table, Flashcards & Quiz",
+            blocks = listOf(
+                BlockOptionSpec(DeckTopic.HIRAGANA, DeckActivityType.CHART),
+                BlockOptionSpec(DeckTopic.HIRAGANA, DeckActivityType.FLASHCARD),
+                BlockOptionSpec(DeckTopic.HIRAGANA, DeckActivityType.QUIZ),
+            ),
+        ),
+        StarterPack(
+            id = "pack_katakana",
+            title = "Katakana Starter",
+            subtitle = "Table, Flashcards & Quiz",
+            blocks = listOf(
+                BlockOptionSpec(DeckTopic.KATAKANA, DeckActivityType.CHART),
+                BlockOptionSpec(DeckTopic.KATAKANA, DeckActivityType.FLASHCARD),
+                BlockOptionSpec(DeckTopic.KATAKANA, DeckActivityType.QUIZ),
+            ),
+        ),
+        StarterPack(
+            id = "pack_kana_review",
+            title = "Daily Kana Review",
+            subtitle = "Hiragana + Katakana Flashcards & SRS",
+            blocks = listOf(
+                BlockOptionSpec(DeckTopic.HIRAGANA, DeckActivityType.FLASHCARD),
+                BlockOptionSpec(DeckTopic.KATAKANA, DeckActivityType.FLASHCARD),
+                BlockOptionSpec(DeckTopic.ALL_REVIEW, DeckActivityType.REVIEW),
+            ),
+        ),
+    )
+}

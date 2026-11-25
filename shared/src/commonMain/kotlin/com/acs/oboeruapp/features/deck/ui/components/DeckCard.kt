@@ -13,6 +13,7 @@ fun DeckCard(
     blocks: List<UserDeckBlock>,
     onBlockClick: (UserDeckBlock) -> Unit,
     modifier: Modifier = Modifier,
+    onBlockLongClick: ((UserDeckBlock) -> Unit)? = null,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -22,6 +23,7 @@ fun DeckCard(
             DeckBlockCard(
                 block = block,
                 onClick = { onBlockClick(block) },
+                onLongClick = onBlockLongClick?.let { handler -> { handler(block) } },
             )
         }
     }

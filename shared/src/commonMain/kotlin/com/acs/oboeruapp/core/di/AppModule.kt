@@ -9,6 +9,7 @@ import com.acs.oboeruapp.core.domain.time.TimeProvider
 import com.acs.oboeruapp.features.auth.AuthViewModel
 import com.acs.oboeruapp.features.auth.data.repository.AuthRepositoryImpl
 import com.acs.oboeruapp.features.auth.domain.repository.AuthRepository
+import com.acs.oboeruapp.features.deck.DeckManagerViewModel
 import com.acs.oboeruapp.features.deck.data.repository.DeckRepositoryImpl
 import com.acs.oboeruapp.features.deck.domain.repository.DeckRepository
 import com.acs.oboeruapp.features.home.HomeViewModel
@@ -57,6 +58,11 @@ val viewModelModule = module {
     viewModel {
         HomeViewModel(
             authRepository = get(),
+            deckRepository = get(),
+        )
+    }
+    viewModel {
+        DeckManagerViewModel(
             deckRepository = get(),
         )
     }

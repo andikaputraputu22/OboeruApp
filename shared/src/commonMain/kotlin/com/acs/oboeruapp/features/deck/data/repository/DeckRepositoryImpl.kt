@@ -5,6 +5,7 @@ import app.cash.sqldelight.coroutines.mapToList
 import com.acs.oboeruapp.core.domain.streak.StreakCalculator
 import com.acs.oboeruapp.core.domain.time.TimeProvider
 import com.acs.oboeruapp.db.OboeruDatabase
+import com.acs.oboeruapp.features.deck.domain.model.BlockOptionSpec
 import com.acs.oboeruapp.features.deck.domain.model.DeckActivityType
 import com.acs.oboeruapp.features.deck.domain.model.DeckTopic
 import com.acs.oboeruapp.features.deck.domain.model.UserDeckBlock
@@ -157,39 +158,61 @@ class DeckRepositoryImpl(
         topic: DeckTopic,
         activityType: DeckActivityType,
         dailyTarget: Int,
-    ): Boolean = withContext(Dispatchers.IO) {
+    ): Boolean = addBlocks(
+        listOf(
+            BlockOptionSpec(
+                topic = topic,
+                activityType = activityType,
+                defaultTarget = dailyTarget,
+            )
+        )
+    ) > 0
+
+    override suspend fun addBlocks(blocks: List<BlockOptionSpec>): Int = withContext(Dispatchers.IO) {
+        if (blocks.isEmpty()) return@withContext 0
         val now = timeProvider.nowEpochMillis()
+
         database.transactionWithResult {
-            val existing = database.userDeckBlockQueries
-                .selectActiveByTopicAndActivity(
-                    topic = topic.name,
-                    activityType = activityType.name,
-                )
-                .executeAsOneOrNull()
-
-            if (existing != null) return@transactionWithResult false
-
             val activeBlocks = database.userDeckBlockQueries.selectActiveBlocks().executeAsList()
-            val nextSortOrder = (activeBlocks.maxOfOrNull { it.sort_order } ?: -1L) + 1L
-            val sanitizedTarget = if (activityType == DeckActivityType.CHART || activityType == DeckActivityType.REVIEW) {
-                0L
-            } else {
-                dailyTarget.coerceAtLeast(1).toLong()
+            var nextSortOrder = (activeBlocks.maxOfOrNull { it.sort_order } ?: -1L) + 1L
+            var addedCount = 0
+
+            blocks.forEach { spec ->
+                val existing = database.userDeckBlockQueries
+                    .selectActiveByTopicAndActivity(
+                        topic = spec.topic.name,
+                        activityType = spec.activityType.name,
+                    )
+                    .executeAsOneOrNull()
+
+                if (existing == null) {
+                    val sanitizedTarget = if (
+                        spec.activityType == DeckActivityType.CHART ||
+                        spec.activityType == DeckActivityType.REVIEW
+                    ) {
+                        0L
+                    } else {
+                        spec.defaultTarget.coerceAtLeast(1).toLong()
+                    }
+
+                    val id = "block_${spec.topic.name.lowercase()}_${spec.activityType.name.lowercase()}_${now}_${Random.nextInt(1000, 9999)}"
+                    database.userDeckBlockQueries.upsert(
+                        id = id,
+                        topic = spec.topic.name,
+                        activityType = spec.activityType.name,
+                        dailyTarget = sanitizedTarget,
+                        sortOrder = nextSortOrder,
+                        createdAt = now,
+                        updatedAt = now,
+                        deletedAt = null,
+                        isSynced = 0L,
+                    )
+                    nextSortOrder++
+                    addedCount++
+                }
             }
 
-            val id = "block_${topic.name.lowercase()}_${activityType.name.lowercase()}_${now}_${Random.nextInt(1000, 9999)}"
-            database.userDeckBlockQueries.upsert(
-                id = id,
-                topic = topic.name,
-                activityType = activityType.name,
-                dailyTarget = sanitizedTarget,
-                sortOrder = nextSortOrder,
-                createdAt = now,
-                updatedAt = now,
-                deletedAt = null,
-                isSynced = 0L,
-            )
-            true
+            addedCount
         }
     }
 

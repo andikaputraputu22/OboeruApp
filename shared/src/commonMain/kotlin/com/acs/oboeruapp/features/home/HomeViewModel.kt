@@ -11,10 +11,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class HomeViewModel(
     authRepository: AuthRepository,
-    deckRepository: DeckRepository,
+    private val deckRepository: DeckRepository,
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = combine(
@@ -46,4 +47,19 @@ class HomeViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = HomeUiState(),
     )
+
+    fun updateDailyTarget(blockId: String, dailyTarget: Int) {
+        viewModelScope.launch {
+            deckRepository.updateDailyTarget(
+                blockId = blockId,
+                dailyTarget = dailyTarget,
+            )
+        }
+    }
+
+    fun removeBlock(blockId: String) {
+        viewModelScope.launch {
+            deckRepository.removeBlock(blockId = blockId)
+        }
+    }
 }
