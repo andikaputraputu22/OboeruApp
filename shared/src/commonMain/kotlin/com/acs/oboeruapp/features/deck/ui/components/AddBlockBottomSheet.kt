@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.acs.oboeruapp.core.designsystem.components.OboeruSegmentedSwitcher
 import com.acs.oboeruapp.features.deck.ActiveBlockKey
 import com.acs.oboeruapp.features.deck.domain.model.DeckActivityType
 import com.acs.oboeruapp.features.deck.domain.model.DeckCatalog
@@ -215,41 +216,12 @@ private fun StepChooseTopicOrPack(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         // Segmented Pill Switcher ("Topics" | "Quick Packs")
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f))
-                .border(1.dp, Color.White.copy(alpha = 0.07f), CircleShape)
-                .padding(4.dp),
-        ) {
-            AddBlockTab.entries.forEach { tab ->
-                val isSelected = tab == selectedTab
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(36.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (isSelected) Color.White.copy(alpha = 0.14f) else Color.Transparent
-                        )
-                        .clickable { onSelectTab(tab) },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = tab.label,
-                        fontSize = 13.sp,
-                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
-                        color = if (isSelected) {
-                            Color.White
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                    )
-                }
-            }
-        }
+        val tabOptions = remember { AddBlockTab.entries.map { it to it.label } }
+        OboeruSegmentedSwitcher(
+            options = tabOptions,
+            selectedOption = selectedTab,
+            onOptionSelected = onSelectTab,
+        )
 
         Spacer(Modifier.height(20.dp))
 

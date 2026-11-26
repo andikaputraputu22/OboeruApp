@@ -32,11 +32,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.acs.oboeruapp.core.designsystem.theme.OboeruTheme
 import com.acs.oboeruapp.features.auth.domain.model.AuthState
 import com.acs.oboeruapp.features.deck.DeckManagerViewModel
+import com.acs.oboeruapp.features.deck.domain.model.DeckActivityType
+import com.acs.oboeruapp.features.deck.domain.model.DeckTopic
 import com.acs.oboeruapp.features.deck.ui.components.AddBlockBottomSheet
 import com.acs.oboeruapp.features.home.ui.HomeScreen
+import com.acs.oboeruapp.features.kana.chart.ui.KanaChartScreen
+import com.acs.oboeruapp.features.kana.domain.model.KanaScript
 import com.acs.oboeruapp.features.onboarding.ui.LandingScreen
 import com.acs.oboeruapp.features.onboarding.ui.OnboardingScreen
 import com.acs.oboeruapp.features.profile.ui.ProfileScreen
@@ -185,7 +190,9 @@ private fun OboeruNavContent(
 
             composable<Screen.Home>(
                 exitTransition = {
-                    if (targetState.destination.hasRoute(Screen.Profile::class)) {
+                    val isPushingDetail = targetState.destination.hasRoute(Screen.Profile::class) ||
+                        targetState.destination.hasRoute(Screen.KanaChart::class)
+                    if (isPushingDetail) {
                         slideOutOfContainer(
                             towards = AnimatedContentTransitionScope.SlideDirection.Start,
                             animationSpec = tween(350, easing = FastOutSlowInEasing),
@@ -194,7 +201,9 @@ private fun OboeruNavContent(
                     } else null
                 },
                 popEnterTransition = {
-                    if (initialState.destination.hasRoute(Screen.Profile::class)) {
+                    val isPoppingDetail = initialState.destination.hasRoute(Screen.Profile::class) ||
+                        initialState.destination.hasRoute(Screen.KanaChart::class)
+                    if (isPoppingDetail) {
                         slideIntoContainer(
                             towards = AnimatedContentTransitionScope.SlideDirection.End,
                             animationSpec = tween(350, easing = FastOutSlowInEasing),
@@ -208,7 +217,26 @@ private fun OboeruNavContent(
                     bottomBarPadding = innerPadding.calculateBottomPadding(),
                     onProfileClick = {
                         navController.navigate(Screen.Profile)
-                    }
+                    },
+                    onBlockClick = { block ->
+                        when (block.activityType) {
+                            DeckActivityType.CHART -> {
+                                val script = when (block.topic) {
+                                    DeckTopic.KATAKANA -> KanaScript.KATAKANA
+                                    else -> KanaScript.HIRAGANA
+                                }
+                                navController.navigate(Screen.KanaChart(script = script.name)) {
+                                    launchSingleTop = true
+                                }
+                            }
+
+                            DeckActivityType.FLASHCARD,
+                            DeckActivityType.QUIZ,
+                            DeckActivityType.REVIEW -> {
+                                // Wired in PR 6–8
+                            }
+                        }
+                    },
                 )
             }
 
@@ -250,6 +278,33 @@ private fun OboeruNavContent(
                     onBackClick = {
                         navController.popBackStack()
                     }
+                )
+            }
+
+            composable<Screen.KanaChart>(
+                enterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    ) + fadeIn(animationSpec = tween(300))
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.End,
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    ) + fadeOut(animationSpec = tween(300))
+                }
+            ) { backStackEntry ->
+                val route = backStackEntry.toRoute<Screen.KanaChart>()
+                KanaChartScreen(
+                    initialScript = KanaScript.fromString(route.script),
+                    topBarPadding = innerPadding.calculateTopPadding(),
+                    bottomBarPadding = innerPadding.calculateBottomPadding(),
+                    onBackClick = {
+                        if (navController.currentBackStackEntry == backStackEntry) {
+                            navController.popBackStack()
+                        }
+                    },
                 )
             }
         }
