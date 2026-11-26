@@ -13,8 +13,10 @@ import com.acs.oboeruapp.features.deck.DeckManagerViewModel
 import com.acs.oboeruapp.features.deck.data.repository.DeckRepositoryImpl
 import com.acs.oboeruapp.features.deck.domain.repository.DeckRepository
 import com.acs.oboeruapp.features.home.HomeViewModel
+import com.acs.oboeruapp.features.kana.chart.KanaChartViewModel
 import com.acs.oboeruapp.features.kana.data.repository.KanaRepositoryImpl
 import com.acs.oboeruapp.features.kana.data.repository.ProgressRepositoryImpl
+import com.acs.oboeruapp.features.kana.domain.model.KanaScript
 import com.acs.oboeruapp.features.kana.domain.repository.KanaRepository
 import com.acs.oboeruapp.features.kana.domain.repository.ProgressRepository
 import com.acs.oboeruapp.features.onboarding.data.repository.OnboardingRepositoryImpl
@@ -64,6 +66,13 @@ val viewModelModule = module {
     viewModel {
         DeckManagerViewModel(
             deckRepository = get(),
+        )
+    }
+    viewModel { (initialScript: KanaScript) ->
+        KanaChartViewModel(
+            initialScript = initialScript,
+            kanaRepository = get(),
+            progressRepository = get(),
         )
     }
     viewModel {

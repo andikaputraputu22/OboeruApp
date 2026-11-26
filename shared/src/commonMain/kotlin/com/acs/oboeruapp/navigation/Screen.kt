@@ -18,4 +18,7 @@ sealed class Screen {
 
     @Serializable
     data object Profile : Screen()
+
+    @Serializable
+    data class KanaChart(val script: String) : Screen()
 }
