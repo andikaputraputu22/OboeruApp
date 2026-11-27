@@ -19,6 +19,7 @@ import com.acs.oboeruapp.features.kana.data.repository.ProgressRepositoryImpl
 import com.acs.oboeruapp.features.kana.domain.model.KanaScript
 import com.acs.oboeruapp.features.kana.domain.repository.KanaRepository
 import com.acs.oboeruapp.features.kana.domain.repository.ProgressRepository
+import com.acs.oboeruapp.features.kana.flashcard.KanaFlashcardViewModel
 import com.acs.oboeruapp.features.onboarding.data.repository.OnboardingRepositoryImpl
 import com.acs.oboeruapp.features.onboarding.domain.repository.OnboardingRepository
 import com.acs.oboeruapp.features.profile.ProfileViewModel
@@ -73,6 +74,16 @@ val viewModelModule = module {
             initialScript = initialScript,
             kanaRepository = get(),
             progressRepository = get(),
+        )
+    }
+    viewModel { params ->
+        KanaFlashcardViewModel(
+            script = params.get(),
+            blockId = params.getOrNull(),
+            kanaRepository = get(),
+            progressRepository = get(),
+            deckRepository = get(),
+            timeProvider = get(),
         )
     }
     viewModel {

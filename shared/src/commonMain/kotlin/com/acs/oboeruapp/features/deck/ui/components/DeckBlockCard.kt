@@ -95,7 +95,12 @@ fun DeckBlockCard(
 
         DeckActivityType.FLASHCARD,
         DeckActivityType.QUIZ -> {
-            val sub = "${block.topic.badgeLabel} · ${block.completedToday}/${block.dailyTarget} today"
+            val extraCount = (block.completedToday - block.dailyTarget).coerceAtLeast(0)
+            val sub = if (extraCount > 0) {
+                "${block.topic.badgeLabel} · ${block.dailyTarget}/${block.dailyTarget} (+$extraCount extra)"
+            } else {
+                "${block.topic.badgeLabel} · ${block.completedToday}/${block.dailyTarget} today"
+            }
             val badge = if (block.isCompletedToday) {
                 "✓ Done today"
             } else {
