@@ -21,4 +21,10 @@ sealed class Screen {
 
     @Serializable
     data class KanaChart(val script: String) : Screen()
+
+    @Serializable
+    data class KanaFlashcard(
+        val script: String,
+        val blockId: String? = null,
+    ) : Screen()
 }
